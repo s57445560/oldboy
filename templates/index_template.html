@@ -1,0 +1,101 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Home</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="keywords" content="Modern Responsive web template, Bootstrap Web Templates, Flat Web Templates, Andriod Compatible web template,
+    Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, SonyErricsson, Motorola web design" />
+    <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+     <!-- Bootstrap Core CSS -->
+    <link href="/static/css/bootstrap.min.css" rel='stylesheet' type='text/css' />
+    <!-- Custom CSS -->
+    <link href="/static/css/style.css" rel='stylesheet' type='text/css' />
+    <!-- Graph CSS -->
+    <link href="/static/css/lines.css" rel='stylesheet' type='text/css' />
+    <link href="/static/css/font-awesome.css" rel="stylesheet">
+    <!-- jQuery -->
+    <script src="/static/js/jquery.min.js"></script>
+    <!----webfonts--->
+    {#<link href='http://fonts.useso.com/css?family=Roboto:400,100,300,500,700,900' rel='stylesheet' type='text/css'>#}
+    <!---//webfonts--->
+    <!-- Nav CSS -->
+    <link href="/static/css/custom.css" rel="stylesheet">
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="/static/js/metisMenu.min.js"></script>
+    <script src="/static/js/custom.js"></script>
+    <!-- Graph JavaScript -->
+    <script src="/static/js/d3.v3.js"></script>
+    <script src="/static/js/rickshaw.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+        {% block css %}
+        {% endblock%}
+</head>
+<body>
+<div id="wrapper">
+     <!-- Navigation -->
+        <nav class="top1 navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/index/">欢迎学员进入老男孩教育({{ request.session.school }})</a>
+            </div>
+            <!-- /.navbar-header -->
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <div style="height: 50px;line-height: 50px">
+                        <span style="display: inline-block;color: red">欢迎学员：{{ request.session.user }}</span>
+                    </div>
+                </li>
+			    <li class="dropdown">
+	        		<a href="#" class="dropdown-toggle avatar" data-toggle="dropdown"><img src="/static/img/1.png"><span class="badge"></span></a>
+	        		<ul class="dropdown-menu">
+
+						<li class="dropdown-menu-header text-center">
+							<strong>用户配置</strong>
+						</li>
+						<li class="m_2"><a href="/logout/"><i class="fa fa-lock"></i> 退出登陆</a></li>
+	        		</ul>
+	      		</li>
+			</ul>
+            <div class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav navbar-collapse">
+                    <ul class="nav" id="side-menu">
+                        <li>
+                            <a href="/"><i class="fa fa-dashboard fa-fw nav_icon"></i>主页</a>
+                        </li>
+                        <li>
+                            <a href="/index/task/"><i class="fa fa-laptop nav_icon"></i>在线学习</a>
+                        </li>
+                        <li>
+                            <a href="/index_p/"><i class="fa fa-indent nav_icon"></i>咨询</a>
+                            <!-- /.nav-second-level -->
+                        </li>
+                    </ul>
+                </div>
+                <!-- /.sidebar-collapse -->
+            </div>
+            <!-- /.navbar-static-side -->
+        </nav>
+        <div id="page-wrapper" style="height: 660px">
+        <div class="graphs">
+            {% block body_t %}
+            {% endblock %}
+            <div class="container">
+                {% block body %}
+
+                {% endblock%}
+            </div>
+		</div>
+       </div>
+
+</div>
+    {% block js %}
+
+    {% endblock%}
+</body>
+</html>

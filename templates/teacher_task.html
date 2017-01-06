@@ -1,0 +1,143 @@
+{% extends 'teacher_template.html' %}
+
+{% block css %}
+    <style>
+        .page a{
+            display: inline-block;
+            padding: 5px;
+            margin: 3px;
+        }
+        .page a.active{
+            background-color: #46b8da;
+        }
+        .page a{
+            text-decoration:none;
+        }
+
+    </style>
+{% endblock %}
+
+{% block body_t %}
+
+{% endblock %}
+
+{% block body %}
+    <div style="height: 100px;">
+        <div><h1>需要判的作业：</h1></div>
+    </div>
+    <div style="height: 350px;">
+        <table class="table table-hover" style="width: 1000px" >
+            <thead >
+                <tr class="info">
+                    <th style="width: 15%;">学生姓名</th>
+                    <th style="width: 10%">课程名</th>
+                    <th style="width: 40%">作业名称</th>
+                    <th style="width: 10%">判作业</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for i in type_list %}
+                <tr>
+                    <td class="td3" style="width: 430px">{{ i.username }}</td>
+                    <td class="td1" style="width: 430px">{{ i.course_content_id__course__name }}</td>
+                    <td class="td2" style="width: 430px">{{ i.course_content_id__name }}</td>
+                    <td><button type="button" class="btn btn-primary btn-xs" data-toggle="modal" data-target=".bs-example-modal-lg{{ forloop.counter }}" id="sun_{{ forloop.counter }}" onclick="check_h(this);">回复</button></td>
+                    <div class="modal fade bs-example-modal-lg{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                <h4 class="modal-title" id="myModalLabel">作业提交</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div style="overflow: auto;height: 500px;position: relative" id="nr">
+                                    <div id="submit" style="height: 250px">
+                                        <h2>作业提交</h2>
+                                        <hr/>
+                                        <div class="tj"></div>
+                                    </div>
+                                    <hr/>
+                                    <div id="reply" style="height: 250px">
+                                        <h2>作业评价</h2>
+                                        <hr/>
+                                        <div class="pj"></div>
+                                    </div>
+                                </div>
+                                <div style="height: 90px"><hr/></div>
+                                <div style="height: 120px">
+                                    <textarea rows="3" cols="80" name="content" placeholder="请输入给学员评分与评价"></textarea>
+                                    <span style="display: none" id="jl">ff</span>
+                                    <button type="button" class="btn btn-danger" style="margin-bottom: 60px;" onclick="submit_tj(this);">提交</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </tr>
+            {% endfor %}
+            <span>{{ list_kc }}</span>
+            </tbody>
+        </table>
+    </div>
+    <div style="">
+        <div class="page" style="text-align: center">{{ str_page }}</div>
+        <div style="text-align: center;color: red"><span>总共{{ all_page }}页</span></div>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+    <script>
+
+        function check_h(ths) {
+            console.log($(ths).parent().parent().find('.td1').text());
+            $(".tj").empty();
+            $(".pj").empty();
+            var task_name = $(ths).parent().parent().find('.td2').text();
+            var user_select = $(ths).parent().parent().find('.td1').text();
+            var user = $(ths).parent().parent().find('.td3').text();
+            $('#jl').attr('task_name',task_name);
+            $('#jl').attr('user_select',user_select);
+            $('#jl').attr('user',user);
+            $('#jl').attr('jq_id',$(ths).attr('id'));
+            $.ajax({
+                url:"/teacher/task/",
+                type:"POST",
+                dataType:'json',
+                data:{'task_name':task_name,'user_select':user_select,'user':user},
+                success:function (data) {
+                    console.log('111112');
+                    $('.tj').append(('<h3 style="color:red;text-align: left">'+data.message+"</h3>"));
+                    if(data.mark==null){
+                        console.log('none');
+                    }else {
+                        $('.pj').append(('<h3 style="color:red;text-align: right">' + data.mark + "</h3>"));
+                    }
+                }
+            })
+        }
+
+            function submit_tj(ths) {
+                var task_name = $('#jl').attr('task_name');
+                var user_select = $('#jl').attr('user_select');
+                var user = $('#jl').attr('user');
+                var task_content = $(ths).parent().find('textarea[name="content"]').val();
+                if(task_content){
+                    console.log('ok');
+                    $.ajax({
+                        url:"/teacher/submit/",
+                        type:"POST",
+                        dataType:'json',
+                        data:{'task_name':task_name,'task_content':task_content,'user_select':user_select,'user':user},
+                        success:function (data) {
+                            if(data.status){
+                                window.location.reload();
+                            }
+                            console.log(data);
+                        }
+                    })
+                }
+        }
+
+    </script>
+{% endblock %}

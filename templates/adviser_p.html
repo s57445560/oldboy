@@ -1,0 +1,130 @@
+{% extends 'adviser_template.html' %}
+
+{% block css %}
+    <style>
+        .page a{
+            display: inline-block;
+            padding: 5px;
+            margin: 3px;
+        }
+        .page a.active{
+            background-color: #46b8da;
+        }
+        .page a{
+            text-decoration:none;
+        }
+
+    </style>
+{% endblock %}
+
+{% block body_t %}
+    <div class="col_3 container">
+
+          </div>
+{% endblock %}
+{% block body %}
+    <span adviser="adviser_name" style="display: none"></span>
+    <div style="height: 80px;"><h1>学员列表</h1></div>
+    <div style="height: 350px;" >
+        <table class="table table-hover" >
+            <thead >
+                <tr class="info">
+                    <th>学员名字</th>
+                    <th>咨询状态</th>
+                    <th>回复消息</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for i in type_list %}
+                <tr>
+                    <td class="td1" style="width: 430px">{{ i.username }}</td>
+
+                    {% if i.username in chat_list %}
+                        <td><span class="label label-primary">有新消息</span></td>
+                    {% else %}
+                        <td><span class="label label-warning">无新消息</span></td>
+                    {% endif %}
+                    <td><button type="button" class="btn btn-primary btn-xs" data-toggle="modal" data-target=".bs-example-modal-lg{{ forloop.counter }}" id="sun_{{ forloop.counter }}" onclick="check_h(this);">回复</button></td>
+                    <div class="modal fade bs-example-modal-lg{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                <h4 class="modal-title" id="myModalLabel">聊天对话框</h4>
+
+                            </div>
+                            <div class="modal-body">
+                                <div style="overflow: auto;height: 500px;position: relative" id="nr">
+                                </div>
+                                <div style="height: 90px"><hr/></div>
+                                <div style="height: 210px">
+                                    <textarea rows="3" cols="80" name="content"></textarea>
+                                    <button type="button" class="btn btn-danger" style="margin-bottom: 60px;" onclick="submit_tj(this);">提交</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </tr>
+            {% endfor %}
+            <span>{{ list_kc }}</span>
+            </tbody>
+        </table>
+    </div>
+    <div style="">
+        <div class="page" style="text-align: center">{{ str_page }}</div>
+        <div style="text-align: center;color: red"><span>总共{{ all_page }}页</span></div>
+    </div>
+
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        function check_h(ths) {
+            var name = $(ths).parent().parent().find('.td1').text();
+            var sun_id = $(ths).attr('id');
+            $('span[adviser="adviser_name"]').attr('div_id',sun_id);
+            console.log($(ths).attr('id'));
+            $('span[adviser="adviser_name"]').text(name);
+            console.log($('span[adviser="adviser_name"]').text());
+            $("#nr").empty();
+            $.ajax({
+                url:'/adviser_lt/',
+                type: 'POST',
+                dataType: 'json',
+                data: {'name': name},
+                success: function (data) {
+                    console.log(data.message);
+                    $.each(data.message, function (key,value) {
+                        console.log(value);
+                        if(value.match(/{{ request.session.user }}: .*/g) == null){
+                            var data = /^(.*?): (.*)/g.exec(value);
+                            $('#nr').append('<h3 style="color:red;text-align: right">'+data[2]+" :"+data[1]+"</h3>")
+                        }else{
+                            $('#nr').append('<h3 style="text-align: left">'+value+"</h3>")
+                        }
+                    })
+            }
+            });
+        }
+        function submit_tj(ths) {
+            console.log($(ths).prev().val());
+            console.log($('span[adviser="adviser_name"]').text());
+            $.ajax({
+                url: '/adviser_tj/',
+                type: 'POST',
+                dataType: 'json',
+                data: {'data': $(ths).prev().val(),'name':$('span[adviser="adviser_name"]').text()},
+                success: function (data) {
+                    console.log(data.status);
+                    if(data.status){
+                        var check_id = $('span[adviser="adviser_name"]').attr('div_id');
+                        check_h($('#'+check_id+''));
+                        $(ths).parent().find('textarea[name="content"]').val('');
+                    }
+                }
+            });
+        }
+    </script>
+{% endblock %}

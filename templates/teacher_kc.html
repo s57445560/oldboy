@@ -1,0 +1,156 @@
+{% extends 'teacher_template.html' %}
+
+{% block css %}
+    <style>
+        .clearfix:after{
+            content: '.';
+            clear: both;
+            display: block;
+            visibility: hidden;
+            height: 0;
+        }
+    </style>
+{% endblock %}
+
+{% block body_t %}
+{% endblock %}
+
+{% block body %}
+<div class="clearfix">
+    <div style="width: 300px;float: left;height: 500px;position: relative;margin-left: 150px;">
+        <div id="bt">
+            <select multiple size="20" class="form-control" name="kc_name">
+                {% for i in data %}
+                    <option bt='bt' value={{ i.id }}>{{ i.name }}</option>
+                {% endfor %}
+            </select>
+            <div style="position: absolute;bottom: 20px;">
+                <form action="/teacher_k/" class="form-inline" role="form" method="post">
+                      <div class="form-group">
+                        <input type="text" class="form-control" id="exampleInputEmail2" placeholder="请输入要添加的课程名" name="coursename">
+                      </div>
+                        <button type="button" class="btn btn-danger" onclick="check_id();">添加</button>
+                        <button type="button" class="btn btn-danger" onclick="remove_id();">删除</button>
+                </form>
+            </div>
+        </div>
+        <div style="position: absolute;bottom: 65px;left: 50px;"><span id="span_error1" style="color: red"></span></div>
+    </div>
+    <div style="width: 50px;float: left">
+        <span class="glyphicon glyphicon-arrow-right" style="padding-top: 150px;padding-left: 13px;"></span>
+    </div>
+    <div style="width: 400px;float: left;height: 500px;position: relative">
+        <div id="nr">
+            <select multiple size="20" class="form-control" name="kc_name">
+                {% for i in content_data %}
+                    <option value={{ i.id }}>{{ i.name }}</option>
+                {% endfor %}
+            </select>
+        <div style="position: absolute;bottom: 20px;left: 20px;">
+            <form action="/teacher_k/" class="form-inline" role="form" method="post">
+                  <div class="form-group">
+                    <input type="text" class="form-control" id="exampleInputEmail2" placeholder="请输入课程作业" name="taskename">
+                  </div>
+                <button type="button" class="btn btn-danger" onclick="check_nr();">添加</button>
+                <button type="button" class="btn btn-danger" onclick="remove_nr();">删除</button>
+            </form>
+        </div>
+        </div>
+        <div style="position: absolute;bottom: 65px;left: 50px;"><span id="span_error2" style="color: red"></span></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+    <script>
+    function check_nr() {
+        $.ajax({
+            url:'/teacher_k/',
+            type: 'POST',
+            dataType: 'json',
+            data: {'taskename':$('input[name="taskename"]').val()},
+            success: function (data) {
+                if(data.status){
+                    console.log('nr cccc');
+                    location.reload();
+                }else {
+                    console.log('nr  cunzai');
+                    $('#span_error2').text(data.message);
+                }
+        }
+    })
+    }
+    function remove_nr() {
+        var id = $('#nr select option:selected').attr('value');
+        if(!id){
+            var id = false;
+        }
+        console.log(id);
+        $.ajax({
+            url:'/teacher_nr/remove/',
+            type: 'POST',
+            dataType: 'json',
+            data: {'id': id },
+            success: function (data) {
+                if(data.status){
+                    console.log('删除成功');
+                    location.reload();
+                }else {
+                    console.log('删除失败');
+                    $('#span_error2').text(data.message);
+                }
+            }
+    })
+    }
+    function check_id() {
+        console.log($('input[name="coursename"]').val());
+        $.ajax({
+                url:'/teacher_k/',
+                type: 'POST',
+                dataType: 'json',
+                data: {'coursename':$('input[name="coursename"]').val()},
+                success: function (data) {
+                    if(data.status){
+                        console.log('ccc');
+                        location.reload();
+                    }else {
+                        console.log('cunzai');
+                        $('#span_error1').text(data.message);
+                    }
+                }
+            })
+    }
+    function remove_id() {
+        var id = $('#bt select option:selected').attr('value');
+        console.log(id);
+        $.ajax({
+            url:'/teacher_bt/remove/',
+            type: 'POST',
+            dataType: 'json',
+            data: {'id': id },
+            success: function (data) {
+                if(data.status){
+                    console.log('删除成功');
+                    location.reload();
+                }else {
+                    console.log('删除失败');
+                    $('#span_error1').text(data.message);
+                }
+            }
+    })
+    }
+        $('option[value="'+ {{ request.session.bt_id }} +'"]').prop('selected', true);
+        $('option[bt="bt"]').click(function() {
+            var bt_id = $(this).attr('value');
+            $.ajax({
+                url:'/teacher_k_bt/',
+                type: 'POST',
+                data: {'id':bt_id},
+                success: function () {
+                        console.log('ffff');
+                        location.reload();
+                }
+            })
+        })
+    </script>
+{% endblock %}

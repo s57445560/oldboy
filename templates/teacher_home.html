@@ -1,0 +1,113 @@
+{% extends 'teacher_template.html' %}
+
+{% block css %}
+
+{% endblock %}
+
+{% block body_t %}
+                <div class="col_3 container">
+                    <div class="col-md-3 widget widget1" style="left: 100px">
+                        <div class="r3_counter_box">
+                            <i class="pull-left fa fa-thumbs-up icon-rounded"></i>
+                            <div class="stats">
+                              <h5><strong>{{ kc_all }}</strong></h5>
+                              <span>本校区所有课程</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 widget widget1" style="left: 100px">
+                        <div class="r3_counter_box">
+                            <i class="pull-left fa fa-users user1 icon-rounded"></i>
+                            <div class="stats">
+                              <h5><strong>{{ task_all}}</strong></h5>
+                              <span>本校区所有作业</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 widget widget1" style="left: 100px">
+                        <div class="r3_counter_box">
+                            <i class="pull-left fa fa-comment user2 icon-rounded"></i>
+                            <div class="stats">
+                              <h5><strong>{{ user_all }}</strong></h5>
+                              <span>本校区所有学员</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clearfix"> </div>
+              </div>
+{% endblock %}
+{% block body %}
+
+<div id="container" style="min-width: 300px; height: 400px; margin: 0 auto;width: 800px;"></div>
+{% endblock %}
+
+{% block js %}
+    <script>
+    $.ajax({
+        url: "/teacher/ajax/",
+        type: 'POST',
+        dataType: 'json',
+        data: {'user_select': 1},
+        success: function (data) {
+            Highcharts.chart('container', {
+                chart: {
+                    type: 'column'
+                },
+                credits:{
+                  text:'老男孩在线教育',
+                  href:'/',
+                    style:{
+                        color: 'red'
+
+                    }
+                },
+                title: {
+                    text: '所有课程学员报名情况'
+                },
+                subtitle: {
+                    text: '{{ request.session.school }}: <a href="/">学员课程分配</a>'
+                },
+                xAxis: {
+                    type: 'category',
+                    labels: {
+                        rotation: -45,
+                        style: {
+                            fontSize: '13px',
+                            fontFamily: 'Verdana, sans-serif'
+                        }
+                    }
+                },
+                yAxis: {
+                    min: 0,
+                    title: {
+                        text: 'Population (millions)'
+                    }
+                },
+                legend: {
+                    enabled: false
+                },
+                tooltip: {
+                    pointFormat: '本课程共有: <b>{point.y:.1f} 学员</b>'
+                },
+                series: [{
+                    name: 'Population',
+                    data: data.data,
+                    dataLabels: {
+                        enabled: true,
+                        rotation: -90,
+                        color: '#FFFFFF',
+                        align: 'right',
+                        format: '{point.y:.1f}', // one decimal
+                        y: 10, // 10 pixels down from the top
+                        style: {
+                            fontSize: '13px',
+                            fontFamily: 'Verdana, sans-serif'
+                        }
+                    }
+                }]
+            });
+        }
+    });
+
+    </script>
+{% endblock %}
